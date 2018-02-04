@@ -1,8 +1,8 @@
 package main
 
 type NewGameRequest struct {
-	CrosswordName string   `json:"crossword_name"`
-	PlayerIDs     []string `json:"player_ids"`
+	CrosswordID string   `json:"crossword_id"`
+	PlayerIDs   []string `json:"player_ids"`
 }
 
 type NewGameResponse struct {

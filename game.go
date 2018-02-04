@@ -35,8 +35,8 @@ func (g *Game) init() {
 
 }
 
-func (g *Game) readCrossword(crosswordName string) error {
-	crossword := fmt.Sprintf("./%s.csv", crosswordName)
+func (g *Game) readCrossword(crosswordID string) error {
+	crossword := fmt.Sprintf("./%s.csv", crosswordID)
 	f, err := os.Open(crossword)
 	if err != nil {
 		log.Print("err: could not open file", "err", err)

@@ -51,6 +51,8 @@ var games map[string]*Game
 // }
 
 func newGameHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	gameID := "9182719874910"
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -77,10 +79,11 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	game.init()
-	err = game.readCrossword(gameRequest.CrosswordName)
+	err = game.readCrossword(gameRequest.CrosswordID)
 	if err != nil {
 		w.WriteHeader(404)
 		w.Write([]byte(err.Error()))
+		return
 	}
 
 	games[gameID] = &game
@@ -92,6 +95,7 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		w.Write([]byte("internal server error"))
 	}
+
 	w.Write(payload)
 }
 
@@ -110,6 +114,8 @@ func getGame(gameID, playerID string) (*Game, error) {
 }
 
 func existingGameHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	gameID := strings.TrimLeft(r.URL.Path, "game/") //?
 	if len(gameID) == 0 {
 		w.WriteHeader(404)
@@ -138,6 +144,7 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		w.Write([]byte("internal server error"))
 	}
+
 	w.Write(payload)
 }
 
