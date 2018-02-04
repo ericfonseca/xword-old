@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 // board[ROW][COLUMN]
@@ -51,6 +53,7 @@ var games map[string]*Game
 // }
 
 func newGameHandler(w http.ResponseWriter, r *http.Request) {
+	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
 	gameID := "9182719874910"
@@ -114,24 +117,30 @@ func getGame(gameID, playerID string) (*Game, error) {
 }
 
 func existingGameHandler(w http.ResponseWriter, r *http.Request) {
+	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
-	gameID := strings.TrimLeft(r.URL.Path, "game/") //?
+
+	vars := mux.Vars(r)
+	gameID := vars["gameID"]
 	if len(gameID) == 0 {
 		w.WriteHeader(404)
 		w.Write([]byte("no game id provided"))
+		return
 	}
 
 	playerID := r.Header.Get("Player-ID")
 	if len(playerID) == 0 {
 		w.WriteHeader(404)
 		w.Write([]byte("no Player-ID header provided"))
+		return
 	}
 	gameID = strings.TrimRight(gameID, "/")
 	fmt.Printf("looking for game with game id: %s", gameID)
 	game, err := getGame(gameID, playerID)
 	if err != nil {
-		fmt.Println("whoops")
+		w.WriteHeader(404)
+		w.Write([]byte(fmt.Sprintf("game id: %s not found", gameID)))
 		return
 	}
 	boardStr := game.Grid.getBoard()
@@ -143,6 +152,7 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte("internal server error"))
+		return
 	}
 
 	w.Write(payload)
@@ -151,7 +161,10 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	games = make(map[string]*Game)
 
-	http.HandleFunc("/game", newGameHandler)
-	http.HandleFunc("/game/", existingGameHandler)
+	router := mux.NewRouter()
+	//clues
+	router.HandleFunc("/game/{gameID}", existingGameHandler)
+	router.HandleFunc("/game", newGameHandler)
+	http.Handle("/", router)
 	http.ListenAndServe(":9999", nil)
 }
