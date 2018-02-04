@@ -11,25 +11,17 @@ import (
 
 const boardLength = 5
 
-// Clue represents info to represent xword clue and position on board
-type Clue struct {
-	Hint   string
-	X      int
-	Y      int
-	Length int
-}
-
 // Game holds state for a game
 type Game struct {
 	GameID  string
-	Clues   map[string]Clue
+	Clues   []Clue
 	Answers map[string]string
 	Grid    *Board
 	Players map[string]struct{}
 }
 
 func (g *Game) init() {
-	g.Clues = make(map[string]Clue)
+	g.Clues = []Clue{}
 	g.Answers = make(map[string]string)
 	g.Grid.init()
 
@@ -48,17 +40,22 @@ func (g *Game) readCrossword(crosswordID string) error {
 
 	for scanner.Scan() {
 		segments := strings.Split(scanner.Text(), ",")
+		clueNum, _ := strconv.Atoi(segments[0])
+		direction := segments[1]
 		key := segments[0] + segments[1]
 		x, _ := strconv.Atoi(segments[2])
 		y, _ := strconv.Atoi(segments[3])
 		length, _ := strconv.Atoi(segments[4])
+		hint := segments[5]
 		clue := Clue{
-			Hint:   segments[5],
-			X:      x,
-			Y:      y,
-			Length: length,
+			ClueNumber: clueNum,
+			Direction:  direction,
+			X:          x,
+			Y:          y,
+			Length:     length,
+			Hint:       hint,
 		}
-		g.Clues[key] = clue
+		g.Clues = append(g.Clues, clue)
 		g.Answers[key] = segments[6]
 	}
 	return nil
