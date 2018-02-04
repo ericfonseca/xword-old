@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"os"
-	"strconv"
+	"net/http"
 	"strings"
 )
 
@@ -15,150 +15,136 @@ import (
 //    0    ,    1    ,2,3,   4  ,  5 ,  6
 // clue_num,direction,x,y,length,hint,answer
 
-// Clue represents info to represent xword clue and position on board
-type Clue struct {
-	Hint   string
-	X      int
-	Y      int
-	Length int
-}
+var games map[string]*Game
 
-const boardLength = 5
+// func start() {
+// 	for {
+// 		fmt.Println("~*~*~*~*~*~*~*~*~*~*~**~*")
+// 		reader := bufio.NewReader(os.Stdin)
+// 		fmt.Printf("%s\n\nwat hint u? (5A, 8D, etc)\n\n", getBoard())
+// 		text, _ := reader.ReadString('\n')
+// 		key := strings.Trim(text, "\n")
+// 		clue, ok := clues[key]
+// 		if !ok {
+// 			fmt.Println("no such hint!")
+// 			continue
+// 		}
+// 		fmt.Printf("%s: %s\nAnswer in all caps pls\n\n", key, clue.Hint)
 
-var clues map[string]Clue
-var answers map[string]string
-var board [boardLength][boardLength]string
+// 		text, _ = reader.ReadString('\n')
+// 		ans := strings.Trim(text, "\n")
 
-func getBoard() string {
-	boardStr := ""
-	boardStr += strings.Repeat("|---|", boardLength) + "\n"
-	for r := 0; r < boardLength; r++ {
-		rowStr := ""
-		for c := 0; c < boardLength; c++ {
-			rowStr += fmt.Sprintf("|%s|", board[r][c])
-		}
-		boardStr += rowStr + "\n"
-		boardStr += strings.Repeat("|---|", boardLength) + "\n"
-	}
-	return fmt.Sprintf(boardStr)
-}
+// 		if ans == answers[key] {
+// 			fillInAns(clue.X, clue.Y, clue.Length, key[1], ans)
+// 			fmt.Printf("ok\n\n")
+// 			fmt.Println(getBoard())
+// 			if checkWin() {
+// 				fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!YOU WIN VICDO!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!")
+// 				return
+// 			}
 
-func initialize() {
-	clues = make(map[string]Clue)
-	answers = make(map[string]string)
-	board = [boardLength][boardLength]string{}
-	for r := 0; r < boardLength; r++ {
-		for c := 0; c < boardLength; c++ {
-			board[r][c] = "###"
-		}
-	}
-}
+// 		} else {
+// 			fmt.Printf("wrong\n\n")
+// 		}
 
-func readXword() {
-	f, err := os.Open("./hints.csv")
+// 	}
+// }
+
+func newGameHandler(w http.ResponseWriter, r *http.Request) {
+	gameID := "9182719874910"
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Print("err: could not open file", "err", err)
+		log.Println("error: could not read request body", "err", err)
 	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanLines)
+	var gameRequest NewGameRequest
+	fmt.Println(body)
+	err = json.Unmarshal(body, &gameRequest)
+	if err != nil {
+		log.Println("error: could not unmarshall game details")
+	}
 
-	for scanner.Scan() {
-		segments := strings.Split(scanner.Text(), ",")
-		key := segments[0] + segments[1]
-		x, _ := strconv.Atoi(segments[2])
-		y, _ := strconv.Atoi(segments[3])
-		length, _ := strconv.Atoi(segments[4])
-		clue := Clue{
-			Hint:   segments[5],
-			X:      x,
-			Y:      y,
-			Length: length,
-		}
-		clues[key] = clue
-		answers[key] = segments[6]
+	game := Game{
+		GameID:  gameID,
+		Clues:   make(map[string]Clue),
+		Answers: make(map[string]string),
+		Grid:    &Board{},
+		Players: make(map[string]struct{}),
 	}
+
+	// add players to game
+	for _, playerID := range gameRequest.PlayerIDs {
+		game.Players[playerID] = struct{}{}
+	}
+
+	game.init()
+	err = game.readCrossword(gameRequest.CrosswordName)
+	if err != nil {
+		w.WriteHeader(404)
+		w.Write([]byte(err.Error()))
+	}
+
+	games[gameID] = &game
+
+	var gameResponse NewGameResponse
+	gameResponse.GameID = gameID
+	payload, err := json.Marshal(gameResponse)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte("internal server error"))
+	}
+	w.Write(payload)
 }
 
-func updateBoard() {
-	for key, clue := range clues {
-		clueNum := key[0]
-		board[clue.Y][clue.X] = fmt.Sprintf("%c/ ", clueNum)
-		if string(key[1]) == "D" {
-			for i := 1; i < clue.Length; i++ {
-				if !strings.Contains(board[clue.Y+i][clue.X], "/") {
-					board[clue.Y+i][clue.X] = "   "
-				}
-			}
-		} else {
-			for i := 1; i < clue.Length; i++ {
-				if !strings.Contains(board[clue.Y][clue.X+i], "/") {
-					board[clue.Y][clue.X+i] = "   "
-				}
-			}
-		}
+func getGame(gameID, playerID string) (*Game, error) {
+	game, ok := games[gameID]
+	if !ok {
+		return nil, fmt.Errorf("no active games with id: %s", gameID)
 	}
+
+	_, ok = game.Players[playerID]
+	if !ok {
+		return nil, fmt.Errorf("you are not part of this game")
+	}
+
+	return game, nil
 }
 
-func fillInAns(x, y, length int, direction byte, word string) {
-	if direction == 'D' {
-		for i := 0; i < length; i++ {
-			board[y+i][x] = board[y+i][x][0:2] + string(word[i])
-		}
-	} else {
-		for i := 0; i < length; i++ {
-			board[y][x+i] = board[y][x+i][0:2] + string(word[i])
-		}
+func existingGameHandler(w http.ResponseWriter, r *http.Request) {
+	gameID := strings.TrimLeft(r.URL.Path, "game/") //?
+	if len(gameID) == 0 {
+		w.WriteHeader(404)
+		w.Write([]byte("no game id provided"))
 	}
-}
 
-func checkWin() bool {
-	for r := 0; r < boardLength; r++ {
-		for c := 0; c < boardLength; c++ {
-			if board[r][c][2] == ' ' {
-				return false
-			}
-		}
+	playerID := r.Header.Get("Player-ID")
+	if len(playerID) == 0 {
+		w.WriteHeader(404)
+		w.Write([]byte("no Player-ID header provided"))
 	}
-	return true
-}
-
-func start() {
-	for {
-		fmt.Println("~*~*~*~*~*~*~*~*~*~*~**~*")
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Printf("%s\n\nwat hint u? (5A, 8D, etc)\n\n", getBoard())
-		text, _ := reader.ReadString('\n')
-		key := strings.Trim(text, "\n")
-		clue, ok := clues[key]
-		if !ok {
-			fmt.Println("no such hint!")
-			continue
-		}
-		fmt.Printf("%s: %s\nAnswer in all caps pls\n\n", key, clue.Hint)
-
-		text, _ = reader.ReadString('\n')
-		ans := strings.Trim(text, "\n")
-
-		if ans == answers[key] {
-			fillInAns(clue.X, clue.Y, clue.Length, key[1], ans)
-			fmt.Printf("ok\n\n")
-			fmt.Println(getBoard())
-			if checkWin() {
-				fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!YOU WIN VICDO!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!")
-				return
-			}
-
-		} else {
-			fmt.Printf("wrong\n\n")
-		}
-
+	gameID = strings.TrimRight(gameID, "/")
+	fmt.Printf("looking for game with game id: %s", gameID)
+	game, err := getGame(gameID, playerID)
+	if err != nil {
+		fmt.Println("whoops")
+		return
 	}
+	boardStr := game.Grid.getBoard()
+
+	var stateRequest GameStateRequest
+	stateRequest.BoardState = boardStr
+
+	payload, err := json.Marshal(stateRequest)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte("internal server error"))
+	}
+	w.Write(payload)
 }
 
 func main() {
-	initialize()
-	readXword()
-	updateBoard()
-	start()
+	games = make(map[string]*Game)
+
+	http.HandleFunc("/game", newGameHandler)
+	http.HandleFunc("/game/", existingGameHandler)
+	http.ListenAndServe(":9999", nil)
 }
