@@ -62,6 +62,7 @@
     "no-eval": true,
     "no-inferrable-types": [
       true,
+      "ignore-properties",
       "ignore-params"
     ],
     "no-misused-new": true,
@@ -99,7 +100,7 @@
         "multiline": {
           "objects": "always",
           "arrays": "always",
-          "functions": "never",
+          "functions": "always",
           "typeLiterals": "ignore"
         },
         "esSpecCompliant": true
