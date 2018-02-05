@@ -11,51 +11,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// board[ROW][COLUMN]
-
-// xword segments
-//    0    ,    1    ,2,3,   4  ,  5 ,  6
-// clue_num,direction,x,y,length,hint,answer
-
 var games map[string]*Game
-
-// func start() {
-// 	for {
-// 		fmt.Println("~*~*~*~*~*~*~*~*~*~*~**~*")
-// 		reader := bufio.NewReader(os.Stdin)
-// 		fmt.Printf("%s\n\nwat hint u? (5A, 8D, etc)\n\n", getBoard())
-// 		text, _ := reader.ReadString('\n')
-// 		key := strings.Trim(text, "\n")
-// 		clue, ok := clues[key]
-// 		if !ok {
-// 			fmt.Println("no such hint!")
-// 			continue
-// 		}
-// 		fmt.Printf("%s: %s\nAnswer in all caps pls\n\n", key, clue.Hint)
-
-// 		text, _ = reader.ReadString('\n')
-// 		ans := strings.Trim(text, "\n")
-
-// 		if ans == answers[key] {
-// 			fillInAns(clue.X, clue.Y, clue.Length, key[1], ans)
-// 			fmt.Printf("ok\n\n")
-// 			fmt.Println(getBoard())
-// 			if checkWin() {
-// 				fmt.Println("!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!YOU WIN VICDO!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!")
-// 				return
-// 			}
-
-// 		} else {
-// 			fmt.Printf("wrong\n\n")
-// 		}
-
-// 	}
-// }
 
 func newGameHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
 	gameID := "9182719874910"
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -125,7 +91,11 @@ func getGame(gameID, playerID string) (*Game, error) {
 func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
 
 	vars := mux.Vars(r)
 	gameID := vars["gameID"]
@@ -169,7 +139,12 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 func getCluesHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
 	vars := mux.Vars(r)
 	gameID := vars["gameID"]
 	if len(gameID) == 0 {
@@ -207,7 +182,11 @@ func getCluesHandler(w http.ResponseWriter, r *http.Request) {
 func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
 
 	vars := mux.Vars(r)
 	gameID := vars["gameID"]
@@ -272,10 +251,10 @@ func main() {
 
 	router := mux.NewRouter()
 	//clues
-	router.HandleFunc("/game/{gameID}/clues/{clue}", submitAnswerHandler).Methods("POST")
-	router.HandleFunc("/game/{gameID}/clues", getCluesHandler).Methods("GET")
-	router.HandleFunc("/game/{gameID}", existingGameHandler).Methods("GET")
-	router.HandleFunc("/game", newGameHandler).Methods("POST")
+	router.HandleFunc("/game/{gameID}/clues/{clue}", submitAnswerHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/game/{gameID}/clues", getCluesHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/game/{gameID}", existingGameHandler).Methods("GET", "OPTIONS")
+	router.HandleFunc("/game", newGameHandler).Methods("POST", "OPTIONS")
 	http.Handle("/", router)
 	http.ListenAndServe(":9999", nil)
 }

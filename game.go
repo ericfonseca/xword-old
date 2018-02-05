@@ -38,6 +38,9 @@ func (g *Game) readCrossword(crosswordID string) error {
 	scanner := bufio.NewScanner(f)
 	scanner.Split(bufio.ScanLines)
 
+	// xword segments
+	//    0    ,    1    ,2,3,   4  ,  5 ,  6
+	// clue_num,direction,x,y,length,hint,answer
 	for scanner.Scan() {
 		segments := strings.Split(scanner.Text(), ",")
 		clueNum, _ := strconv.Atoi(segments[0])
