@@ -145,7 +145,7 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(gameID, playerID)
 	if err != nil {
 		w.WriteHeader(404)
-		w.Write([]byte(fmt.Sprintf("game id: %s not found", gameID)))
+		w.Write([]byte(fmt.Sprintf("game id: %s not found or you are not part of it", gameID)))
 		return
 	}
 	boardStr := game.Grid.getBoard()
@@ -188,7 +188,7 @@ func getCluesHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(gameID, playerID)
 	if err != nil {
 		w.WriteHeader(404)
-		w.Write([]byte(fmt.Sprintf("game id: %s not found", gameID)))
+		w.Write([]byte(fmt.Sprintf("game id: %s not found or you are not part of it", gameID)))
 		return
 	}
 
@@ -234,7 +234,7 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	game, err := getGame(gameID, playerID)
 	if err != nil {
 		w.WriteHeader(404)
-		w.Write([]byte(fmt.Sprintf("game id: %s not found", gameID)))
+		w.Write([]byte(fmt.Sprintf("game id: %s not found or you are not part of it", gameID)))
 		return
 	}
 
