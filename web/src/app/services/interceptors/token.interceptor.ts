@@ -13,7 +13,6 @@ export class TokenInterceptor implements HttpInterceptor {
   constructor(public auth: AuthService) {}
   public intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    console.log('intercepting');
     request = request.clone({
       setHeaders: {
         'Player-ID': this.auth.getPlayerId(),
