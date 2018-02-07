@@ -1,0 +1,25 @@
+@import 'variables';
+
+.board-row {
+  display: flex;
+
+  .tile {
+    border: 1px solid #ccc;
+    border-width: 1px 0 0 1px;
+    display: inline-block;
+    padding: 30px;
+
+    &:last-child {
+      border-right-width: 1px;
+    }
+    &.tile-invalid {
+      background: repeating-linear-gradient(45deg, #777, #777 5px, #888 5px, #888 10px);
+    }
+  }
+
+  &:last-child {
+    .tile {
+      border-bottom-width: 1px;
+    }
+  }
+}

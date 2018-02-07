@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   ) { }
 
   public ngOnInit() {
-    //
+    this.createNewGame();
   }
 
   public createNewGame() {

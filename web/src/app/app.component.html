@@ -6,6 +6,7 @@
   <ol>
     <ol *ngFor="let clue of game.clues"><strong>{{clue.number}}{{clue.direction}}</strong> {{clue.hint}}</ol>
   </ol>
+  <xw-board [game]="game"></xw-board>
 </div>
 
 <router-outlet></router-outlet>
