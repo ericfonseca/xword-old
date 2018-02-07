@@ -2,7 +2,10 @@
 
 <div *ngIf="game">
   <h1>Game details</h1>
-  <strong>id:</strong>: {{game.id}}
+  <strong>id:</strong> {{game.id}}
+  <ol>
+    <ol *ngFor="let clue of game.clues"><strong>{{clue.number}}{{clue.direction}}</strong> {{clue.hint}}</ol>
+  </ol>
 </div>
 
 <router-outlet></router-outlet>
