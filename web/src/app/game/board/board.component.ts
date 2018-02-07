@@ -33,7 +33,8 @@ export class BoardComponent implements OnInit {
   }
 
   private populateBoard() {
-    this.game.clues.forEach((clue) => {
+    const { crossword } = this.game;
+    crossword.clues.forEach((clue) => {
       let [x, y] = [clue.position.x, clue.position.y];
       for (let i = 0; i < clue.tileLength; i++) {
         this.board[x][y] = '';

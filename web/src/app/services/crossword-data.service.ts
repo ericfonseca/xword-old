@@ -44,21 +44,23 @@ export class CrosswordDataService {
           .map((clueRes: CluesResponse) => {
             return new Game({
               id: gameId,
-              clues: this.extractClues(clueRes),
+              crossword: this.extractCrossword(clueRes),
             })
           });
       });
   }
 
-  private extractClues(clueRes: CluesResponse) {
-    return clueRes.clues.map((clue) => {
-      return new Clue({
-        number: clue.clue_number,
-        position: { x: clue.x, y: clue.y },
-        tileLength: clue.length,
-        hint: clue.hint,
-        direction: clue.direction,
-      });
+  private extractCrossword(clueRes: CluesResponse) {
+    return new Crossword({
+      clues: clueRes.clues.map((clue) => {
+        return new Clue({
+          number: clue.clue_number,
+          position: { x: clue.x, y: clue.y },
+          tileLength: clue.length,
+          hint: clue.hint,
+          direction: clue.direction,
+        });
+      }),
     });
   }
 }

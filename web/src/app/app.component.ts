@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CrosswordDataService } from '@services/crossword-data.service';
-import { Game } from '@app/models';
+import { Game, Crossword } from '@app/models';
 
 import 'rxjs/add/operator/first';
 
@@ -20,9 +20,9 @@ export class AppComponent implements OnInit {
   }
 
   public createNewGame() {
-    this.crosswordDataService.createNewGame({
+    this.crosswordDataService.createNewGame(new Crossword({
       id: 'hints',
-    }).first().subscribe({
+    })).first().subscribe({
       next: (game: Game) => {
         this.game = game;
       },

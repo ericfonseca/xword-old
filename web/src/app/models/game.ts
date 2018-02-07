@@ -1,13 +1,13 @@
-import { Clue } from './clue';
+import { Crossword } from './crossword';
 
 interface GameParams {
   id: string;
-  clues: Clue[];
+  crossword: Crossword;
 }
 
 export class Game {
   public id: string;
-  public clues: Clue[];
+  public crossword: Crossword;
 
   constructor(args: GameParams) {
     Object.assign(this, args);
