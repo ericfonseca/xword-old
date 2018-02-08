@@ -1,4 +1,4 @@
-<div *ngFor="let row of board" class="board-row">
+<div *ngFor="let row of game.board" class="board-row">
   <div *ngFor="let tile of row" class="tile" [class.tile-invalid]="tile === -1">
   </div>
 </div>
