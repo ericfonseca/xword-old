@@ -10,7 +10,9 @@ type NewGameResponse struct {
 }
 
 type GameStateRequest struct {
-	BoardState string `json:"board_state"`
+	BoardWidth  int    `json:"board_width"`
+	BoardHeight int    `json:"board_height"`
+	BoardState  string `json:"board_state"`
 }
 
 type Clue struct {
@@ -19,7 +21,7 @@ type Clue struct {
 	X          int    `json:"x"`
 	Y          int    `json:"y"`
 	Length     int    `json:"length"`
-	Hint       string `json:"hint"s`
+	Hint       string `json:"hint"`
 }
 type Clues struct {
 	Clues []Clue `json:"clues"`
