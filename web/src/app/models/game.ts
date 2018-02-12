@@ -26,7 +26,7 @@ export class Game {
       const row = [];
       for(let j = 0; j < BOARD_SIZE; j++) {
         row.push(new Tile({
-          position: new Position(i, j),
+          position: new Position(j, i),
         }));
       }
       this.board.push(row);
@@ -39,7 +39,7 @@ export class Game {
     this.crossword.clues.forEach((clue) => {
       let [x, y] = [clue.position.x, clue.position.y];
       for (let i = 0; i < clue.tileLength; i++) {
-        const tile = this.board[x][y];
+        const tile = this.board[y][x];
         tile.addClue(clue);
         tile.value = '';
         if (clue.direction === 'A') {
