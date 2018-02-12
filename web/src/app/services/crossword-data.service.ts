@@ -6,6 +6,10 @@ import { Observable } from 'rxjs/Observable';
 import { Crossword, Game, Player, Clue, Direction } from '@app/models';
 import { AppConfig } from '@app/app.config';
 
+interface CrosswordResponse {
+  'crossword_ids': string[];
+}
+
 interface GameResponse {
   'game_id': string;
 }
@@ -25,6 +29,11 @@ interface CluesResponse {
 export class CrosswordDataService {
 
   constructor(public http: HttpClient) { }
+
+  public getPuzzles(): Observable<string[]> {
+    return this.http.get(`${AppConfig.BASE_URL}/crosswords`)
+      .map((crosswordRes: CrosswordResponse) => this.extractCrosswordIds(crosswordRes))
+  }
 
   public createNewGame(crossword: Crossword, opponent?: Player): Observable<Game> {
     const data = {
@@ -48,6 +57,10 @@ export class CrosswordDataService {
             })
           });
       });
+  }
+
+  private extractCrosswordIds(crosswordRes: CrosswordResponse) {
+    return crosswordRes.crossword_ids;
   }
 
   private extractCrossword(clueRes: CluesResponse) {

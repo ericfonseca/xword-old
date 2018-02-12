@@ -16,7 +16,14 @@ export class AppComponent implements OnInit {
   ) { }
 
   public ngOnInit() {
+    this.getCrosswords();
     this.createNewGame();
+  }
+
+  public getCrosswords() {
+    this.crosswordDataService.getPuzzles().subscribe((crosswordIds: string[]) => {
+      console.log(crosswordIds)
+    });
   }
 
   public createNewGame() {

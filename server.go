@@ -278,17 +278,17 @@ func puzzleHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("internal server error"))
 		return
 	}
-	availablePuzzles := []string{}
+	availableCrosswords := []string{}
 	for _, f := range files {
 		filename := path.Base(f.Name())
 		if strings.HasSuffix(filename, ".puz") {
-			availablePuzzles = append(availablePuzzles, strings.TrimRight(filename, ".puz"))
+			availableCrosswords = append(availableCrosswords, strings.TrimRight(filename, ".puz"))
 		}
 	}
 
-	var puzzleResponse PuzzleResponse
-	puzzleResponse.Answer = availablePuzzles
-	payload, err := json.Marshal(&puzzleResponse)
+	var crosswordResponse CrosswordResponse
+	crosswordResponse.Answer = availableCrosswords
+	payload, err := json.Marshal(&crosswordResponse)
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte("internal server error"))
@@ -306,7 +306,7 @@ func main() {
 	router.HandleFunc("/game/{gameID}/clues", getCluesHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game/{gameID}", existingGameHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game", newGameHandler).Methods("POST", "OPTIONS")
-	router.HandleFunc("/puzzles", puzzleHandler).Methods("GET")
+	router.HandleFunc("/crosswords", puzzleHandler).Methods("GET", "OPTIONS")
 	http.Handle("/", router)
 	http.ListenAndServe(":9999", nil)
 }
