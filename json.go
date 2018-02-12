@@ -30,3 +30,7 @@ type Clues struct {
 type SubmitAnswerRequest struct {
 	Answer string `json:"answer"`
 }
+
+type PuzzleResponse struct {
+	Answer []string `json:"puzzles"`
+}
