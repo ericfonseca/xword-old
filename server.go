@@ -267,6 +267,10 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func puzzleHandler(w http.ResponseWriter, r *http.Request) {
+	// add cors headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
 	files, err := ioutil.ReadDir("./puzzles")
 	if err != nil {
 		log.Println("could not read puzzles dir", "err", err)
