@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Game } from '@app/models';
+import { Game, Clue } from '@app/models';
 
 @Component({
   selector: 'xw-board',
@@ -8,10 +8,9 @@ import { Game } from '@app/models';
 })
 export class BoardComponent implements OnInit {
   @Input() public game: Game;
+  private selectedClue: Clue;
 
-  constructor() {
-
-  }
+  constructor() {}
 
   public ngOnInit() {
 
