@@ -7,24 +7,50 @@ interface TileClue {
 }
 
 interface TileParams {
-  clues: Clue[],
-  value: -1 | string;
+  clues?: Clue[],
+  value?: -1 | string;
   position: Position;
 }
 
 export class Tile {
   public associatedClues: TileClue[] = [];
-  public value: -1 | string;
+  public value: -1 | string = -1;
   public position: Position;
 
   constructor(args: TileParams) {
-    this.value = args.value;
+    this.setAttributes(args);
+  }
+
+  public setAttributes(args: TileParams) {
+    this.value = args.value || -1;
     this.position = new Position(args.position.x, args.position.y);
-    args.clues.forEach((clue) => {
-      this.associatedClues.push({
-        isStartTile: clue.position.isEqualTo(this.position),
-        clue: clue,
-      });
-    })
+    if (args.clues) {
+      this.clues = args.clues;
+    }
+  }
+
+  public addClue(clue: Clue) {
+    this.associatedClues.push(this.clueToAssociatedClue(clue));
+  }
+
+  get displayNumber(): string {
+    const startTiles = this.associatedClues.filter((clue) => clue.isStartTile);
+    if (startTiles.length) {
+      return `${startTiles[0].clue.number}`;
+    }
+    return '';
+  }
+
+  set clues(clues: Clue[]) {
+    clues.forEach((clue) => {
+      this.associatedClues.push(this.clueToAssociatedClue(clue));
+    });
+  }
+
+  private clueToAssociatedClue(clue: Clue): TileClue {
+    return {
+      isStartTile: clue.position.isEqualTo(this.position),
+      clue: clue,
+    };
   }
 }

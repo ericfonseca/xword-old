@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
   public createNewGame() {
     this.crosswordDataService.createNewGame(new Crossword({
-      id: 'hints',
+      id: 'Sep0512',
     })).first().subscribe({
       next: (game: Game) => {
         this.game = game;

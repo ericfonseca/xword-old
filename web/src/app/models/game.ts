@@ -1,7 +1,8 @@
 import { Crossword } from './crossword';
+import { Tile } from './tile';
+import { Position } from './position';
 
-type Tile = -1 | string;
-const BOARD_SIZE = 10;
+const BOARD_SIZE = 15;
 
 interface GameParams {
   id: string;
@@ -24,7 +25,9 @@ export class Game {
     for (let i = 0; i < BOARD_SIZE; i++) {
       const row = [];
       for(let j = 0; j < BOARD_SIZE; j++) {
-        row.push(-1);
+        row.push(new Tile({
+          position: new Position(i, j),
+        }));
       }
       this.board.push(row);
     }
@@ -36,7 +39,9 @@ export class Game {
     this.crossword.clues.forEach((clue) => {
       let [x, y] = [clue.position.x, clue.position.y];
       for (let i = 0; i < clue.tileLength; i++) {
-        this.board[x][y] = '';
+        const tile = this.board[x][y];
+        tile.addClue(clue);
+        tile.value = '';
         if (clue.direction === 'A') {
           x++;
         } else {
