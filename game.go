@@ -74,7 +74,7 @@ func isUpperChar(val byte) bool {
 }
 
 func (g *Game) readCrossword(crosswordID string) error {
-	crosswordFile := fmt.Sprintf("./%s.puz", crosswordID)
+	crosswordFile := fmt.Sprintf("./puzzles/%s.puz", crosswordID)
 	dat, err := ioutil.ReadFile(crosswordFile)
 	if err != nil {
 		log.Println("err: could not read puzzle", "file", crosswordFile, "err", err)

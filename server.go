@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -254,6 +255,33 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func puzzleHandler(w http.ResponseWriter, r *http.Request) {
+	files, err := ioutil.ReadDir("./puzzles")
+	if err != nil {
+		log.Println("could not read puzzles dir", "err", err)
+		w.WriteHeader(500)
+		w.Write([]byte("internal server error"))
+		return
+	}
+	availablePuzzles := []string{}
+	for _, f := range files {
+		filename := path.Base(f.Name())
+		if strings.HasSuffix(filename, ".puz") {
+			availablePuzzles = append(availablePuzzles, strings.TrimRight(filename, ".puz"))
+		}
+	}
+
+	var puzzleResponse PuzzleResponse
+	puzzleResponse.Answer = availablePuzzles
+	payload, err := json.Marshal(&puzzleResponse)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte("internal server error"))
+		return
+	}
+	w.Write(payload)
+}
+
 func main() {
 	games = make(map[string]*Game)
 
@@ -263,6 +291,7 @@ func main() {
 	router.HandleFunc("/game/{gameID}/clues", getCluesHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game/{gameID}", existingGameHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game", newGameHandler).Methods("POST", "OPTIONS")
+	router.HandleFunc("/puzzles", puzzleHandler).Methods("GET")
 	http.Handle("/", router)
 	http.ListenAndServe(":9999", nil)
 }
