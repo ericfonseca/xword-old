@@ -1,65 +1,191 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"os"
-	"strconv"
 	"strings"
 )
 
-const boardLength = 5
+const preDimensionStr = "RBJ III   "
+const preCluesStr = "The New York Times"
 
 // Game holds state for a game
 type Game struct {
 	GameID  string
-	Clues   []Clue
+	Clues   map[string]Clue
 	Answers map[string]string
 	Grid    *Board
 	Players map[string]struct{}
 }
 
 func (g *Game) init() {
-	g.Clues = []Clue{}
+	g.Clues = make(map[string]Clue)
 	g.Answers = make(map[string]string)
-	g.Grid.init()
+}
+
+func isAcross(r, c, width int, grid [][]byte) (bool, int) {
+	wordSize := 1
+	for n := c + 1; n < width; n++ {
+		if grid[r][n] == 46 {
+			break
+		}
+		wordSize++
+	}
+
+	var canBeStart bool
+	if c == 0 {
+		canBeStart = true
+	} else if grid[r][c-1] == 46 {
+		canBeStart = true
+	} else {
+		canBeStart = false
+	}
+
+	return (wordSize > 1 && canBeStart), wordSize
 
 }
 
+func isDown(r, c, height int, grid [][]byte) (bool, int) {
+	wordSize := 1
+	for n := r + 1; n < height; n++ {
+		if grid[n][c] == 46 {
+			break
+		}
+		wordSize++
+	}
+
+	var canBeStart bool
+	if r == 0 {
+		canBeStart = true
+	} else if grid[r-1][c] == 46 {
+		canBeStart = true
+	} else {
+		canBeStart = false
+	}
+
+	return (wordSize > 1 && canBeStart), wordSize
+}
+func isUpperChar(val byte) bool {
+	if val >= 65 && val <= 90 {
+		return true
+	}
+	return false
+}
+
 func (g *Game) readCrossword(crosswordID string) error {
-	crossword := fmt.Sprintf("./%s.csv", crosswordID)
-	f, err := os.Open(crossword)
+	crosswordFile := fmt.Sprintf("./%s.puz", crosswordID)
+	dat, err := ioutil.ReadFile(crosswordFile)
 	if err != nil {
-		log.Print("err: could not open file", "err", err)
+		log.Println("err: could not read puzzle", "file", crosswordFile, "err", err)
 		return err
 	}
-	defer f.Close()
-	scanner := bufio.NewScanner(f)
-	scanner.Split(bufio.ScanLines)
 
-	// xword segments
-	//    0    ,    1    ,2,3,   4  ,  5 ,  6
-	// clue_num,direction,x,y,length,hint,answer
-	for scanner.Scan() {
-		segments := strings.Split(scanner.Text(), ",")
-		clueNum, _ := strconv.Atoi(segments[0])
-		direction := segments[1]
-		key := segments[0] + segments[1]
-		x, _ := strconv.Atoi(segments[2])
-		y, _ := strconv.Atoi(segments[3])
-		length, _ := strconv.Atoi(segments[4])
-		hint := segments[5]
-		clue := Clue{
-			ClueNumber: clueNum,
-			Direction:  direction,
-			X:          x,
-			Y:          y,
-			Length:     length,
-			Hint:       hint,
+	idx := strings.Index(string(dat), preDimensionStr)
+
+	dimensionStart := idx + len(preDimensionStr)
+	boardWidth := int(dat[dimensionStart])
+	boardHeight := int(dat[dimensionStart+1])
+	numClues := int(dat[dimensionStart+2])
+
+	answersStart := 0
+	for i := dimensionStart + 1; i < dimensionStart+20; i++ {
+		if isUpperChar((dat[i])) && isUpperChar((dat[i+1])) {
+			answersStart = i
+			break
 		}
-		g.Clues = append(g.Clues, clue)
-		g.Answers[key] = segments[6]
 	}
+
+	answersGrid := make([][]byte, boardHeight)
+	for i := range answersGrid {
+		answersGrid[i] = make([]byte, boardWidth)
+		for j := 0; j < boardWidth; j++ {
+			answersGrid[i][j] = dat[answersStart]
+			answersStart++
+		}
+	}
+
+	idx = strings.Index(string(dat), preCluesStr)
+	cluesStart := idx + len(preCluesStr)
+	clues := []string{}
+	offset := 0
+	for {
+		if dat[cluesStart+offset] == 0 {
+			wholeClue := dat[cluesStart : cluesStart+offset]
+			cluesStart = cluesStart + offset
+			offset = 0
+			if len(wholeClue) > 1 {
+				//strip off the null byte that delimits clues
+				wholeClue = wholeClue[1:]
+				clues = append(clues, string(wholeClue))
+			}
+		}
+		if len(clues) == numClues {
+			break
+		}
+		offset++
+	}
+
+	clueNum := 1
+	clueOffset := 0
+	for r := range answersGrid {
+		for c := range answersGrid[r] {
+			// no dots
+			if answersGrid[r][c] == 46 {
+				continue
+			}
+			across, acrossLen := isAcross(r, c, boardWidth, answersGrid)
+			down, downLen := isDown(r, c, boardHeight, answersGrid)
+
+			if across {
+				ans := []byte{}
+				ans = append(ans, answersGrid[r][c])
+				for i := 1; i < acrossLen; i++ {
+					ans = append(ans, answersGrid[r][c+i])
+				}
+				clue := Clue{
+					ClueNumber: clueNum,
+					Direction:  "A",
+					X:          c,
+					Y:          r,
+					Length:     acrossLen,
+					Hint:       clues[clueOffset],
+				}
+				key := fmt.Sprintf("%dA", clueNum)
+				g.Clues[key] = clue
+				g.Answers[key] = string(ans)
+				clueOffset++
+			}
+
+			if down {
+				ans := []byte{}
+				ans = append(ans, answersGrid[r][c])
+				for i := 1; i < downLen; i++ {
+					ans = append(ans, answersGrid[r+i][c])
+				}
+				clue := Clue{
+					ClueNumber: clueNum,
+					Direction:  "D",
+					X:          c,
+					Y:          r,
+					Length:     downLen,
+					Hint:       clues[clueOffset],
+				}
+				key := fmt.Sprintf("%dD", clueNum)
+				g.Clues[key] = clue
+				g.Answers[key] = string(ans)
+				clueOffset++
+			}
+
+			if across || down {
+				clueNum++
+			}
+
+		}
+	}
+
+	g.Grid.init(boardWidth, boardHeight)
+	g.Grid.updateBoard(g.Clues)
+
 	return nil
 }

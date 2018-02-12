@@ -39,7 +39,7 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	game := Game{
 		GameID:  gameID,
-		Clues:   []Clue{},
+		Clues:   make(map[string]Clue),
 		Answers: make(map[string]string),
 		Grid:    &Board{},
 		Players: make(map[string]struct{}),
@@ -122,6 +122,8 @@ func existingGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	var stateRequest GameStateRequest
 	stateRequest.BoardState = boardStr
+	stateRequest.BoardWidth = game.Grid.Width
+	stateRequest.BoardHeight = game.Grid.Height
 
 	payload, err := json.Marshal(stateRequest)
 	if err != nil {
@@ -168,7 +170,11 @@ func getCluesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var cluesResponse Clues
-	cluesResponse.Clues = game.Clues
+	var clues []Clue
+	for _, c := range game.Clues {
+		clues = append(clues, c)
+	}
+	cluesResponse.Clues = clues
 	payload, err := json.Marshal(cluesResponse)
 	if err != nil {
 		w.WriteHeader(500)
@@ -241,6 +247,8 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 
 	if serverAnswer == uppercaseAnswer {
 		w.Write([]byte("ok"))
+		solvedClue := game.Clues[clue]
+		game.Grid.fillInAns(solvedClue.X, solvedClue.Y, solvedClue.Length, solvedClue.Direction, serverAnswer)
 	} else {
 		w.Write([]byte("not ok"))
 	}
