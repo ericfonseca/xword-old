@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"path"
 	"strings"
@@ -13,6 +14,16 @@ import (
 )
 
 var games map[string]*Game
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func randStringBytes(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
 
 func newGameHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
@@ -23,7 +34,7 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gameID := "9182719874910"
+	gameID := randStringBytes(16)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(404)
