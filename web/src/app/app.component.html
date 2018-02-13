@@ -4,7 +4,9 @@
   <h1>Game details</h1>
   <strong>id:</strong> {{game.id}}
   <ul>
-    <li *ngFor="let clue of game.crossword.clues"><strong>{{clue.number}}{{clue.direction}}</strong> {{clue.hint}}</li>
+    <li *ngFor="let clue of game.crossword.clues">
+      <strong>{{clue.number}}{{clue.direction}}</strong> {{clue.hint}}
+    </li>
   </ul>
   <xw-board [game]="game"></xw-board>
 </div>

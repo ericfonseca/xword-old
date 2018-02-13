@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Game, Clue } from '@app/models';
+import { Clue, Direction, Game, Tile } from '@app/models';
 
 @Component({
   selector: 'xw-board',
@@ -8,11 +8,22 @@ import { Game, Clue } from '@app/models';
 })
 export class BoardComponent implements OnInit {
   @Input() public game: Game;
-  private selectedClue: Clue;
+  public selectedClue: Clue;
+  public selectedTile: Tile;
+  public direction: Direction = 'A';
 
   constructor() {}
 
   public ngOnInit() {
 
+  }
+
+  public onTileSelected(tile: Tile) {
+    this.selectedTile = tile;
+    try {
+      this.selectedClue = tile.getClues().filter((clue) => clue.direction === this.direction)[0];
+    } catch(_) {
+      this.selectedClue = tile.getClues()[0];
+    }
   }
 }

@@ -41,6 +41,10 @@ export class Tile {
     return '';
   }
 
+  public getClues(): Clue[] {
+    return this.associatedClues.map((ascClue: TileClue) => ascClue.clue);
+  }
+
   set clues(clues: Clue[]) {
     clues.forEach((clue) => {
       this.associatedClues.push(this.clueToAssociatedClue(clue));
