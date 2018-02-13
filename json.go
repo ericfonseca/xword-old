@@ -31,6 +31,6 @@ type SubmitAnswerRequest struct {
 	Answer string `json:"answer"`
 }
 
-type PuzzleResponse struct {
-	Answer []string `json:"puzzles"`
+type CrosswordResponse struct {
+	Answer []string `json:"crossword_ids"`
 }

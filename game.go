@@ -9,6 +9,7 @@ import (
 
 const preDimensionStr = "RBJ III   "
 const preCluesStr = "The New York Times"
+const preCluesStr2 = " Fred Piscop"
 
 // Game holds state for a game
 type Game struct {
@@ -81,12 +82,19 @@ func (g *Game) readCrossword(crosswordID string) error {
 		return err
 	}
 
+	var dimensionStart, boardWidth, boardHeight, numClues int
 	idx := strings.Index(string(dat), preDimensionStr)
-
-	dimensionStart := idx + len(preDimensionStr)
-	boardWidth := int(dat[dimensionStart])
-	boardHeight := int(dat[dimensionStart+1])
-	numClues := int(dat[dimensionStart+2])
+	if idx > 0 {
+		dimensionStart = idx + len(preDimensionStr)
+		boardWidth = int(dat[dimensionStart])
+		boardHeight = int(dat[dimensionStart+1])
+		numClues = int(dat[dimensionStart+2])
+	} else {
+		dimensionStart = 47
+		boardWidth = int(dat[44])
+		boardHeight = int(dat[45])
+		numClues = int(dat[46])
+	}
 
 	answersStart := 0
 	for i := dimensionStart + 1; i < dimensionStart+20; i++ {
@@ -107,6 +115,11 @@ func (g *Game) readCrossword(crosswordID string) error {
 
 	idx = strings.Index(string(dat), preCluesStr)
 	cluesStart := idx + len(preCluesStr)
+	if idx < 0 {
+		// maybe this isnt a nyt puzzle
+		idx = strings.Index(string(dat), preCluesStr2)
+		cluesStart = idx + len(preCluesStr2)
+	}
 	clues := []string{}
 	offset := 0
 	for {

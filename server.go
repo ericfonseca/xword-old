@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"path"
 	"strings"
@@ -13,6 +14,16 @@ import (
 )
 
 var games map[string]*Game
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func randStringBytes(n int) string {
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	return string(b)
+}
 
 func newGameHandler(w http.ResponseWriter, r *http.Request) {
 	// add cors headers
@@ -23,7 +34,7 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gameID := "9182719874910"
+	gameID := randStringBytes(16)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(404)
@@ -256,6 +267,10 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func puzzleHandler(w http.ResponseWriter, r *http.Request) {
+	// add cors headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Player-ID")
+
 	files, err := ioutil.ReadDir("./puzzles")
 	if err != nil {
 		log.Println("could not read puzzles dir", "err", err)
@@ -263,17 +278,17 @@ func puzzleHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("internal server error"))
 		return
 	}
-	availablePuzzles := []string{}
+	availableCrosswords := []string{}
 	for _, f := range files {
 		filename := path.Base(f.Name())
 		if strings.HasSuffix(filename, ".puz") {
-			availablePuzzles = append(availablePuzzles, strings.TrimRight(filename, ".puz"))
+			availableCrosswords = append(availableCrosswords, strings.TrimRight(filename, ".puz"))
 		}
 	}
 
-	var puzzleResponse PuzzleResponse
-	puzzleResponse.Answer = availablePuzzles
-	payload, err := json.Marshal(&puzzleResponse)
+	var crosswordResponse CrosswordResponse
+	crosswordResponse.Answer = availableCrosswords
+	payload, err := json.Marshal(&crosswordResponse)
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte("internal server error"))
@@ -291,7 +306,7 @@ func main() {
 	router.HandleFunc("/game/{gameID}/clues", getCluesHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game/{gameID}", existingGameHandler).Methods("GET", "OPTIONS")
 	router.HandleFunc("/game", newGameHandler).Methods("POST", "OPTIONS")
-	router.HandleFunc("/puzzles", puzzleHandler).Methods("GET")
+	router.HandleFunc("/crosswords", puzzleHandler).Methods("GET", "OPTIONS")
 	http.Handle("/", router)
 	http.ListenAndServe(":9999", nil)
 }
