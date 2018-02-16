@@ -19,11 +19,23 @@ export class BoardComponent implements OnInit {
   }
 
   public onTileSelected(tile: Tile) {
+    if (tile.value === -1) {
+      return;
+    }
+
+    if (this.selectedTile === tile) {
+      this.changeDirection();
+    }
+
     this.selectedTile = tile;
     try {
       this.selectedClue = tile.getClues().filter((clue) => clue.direction === this.direction)[0];
     } catch(_) {
       this.selectedClue = tile.getClues()[0];
     }
+  }
+
+  public changeDirection() {
+    this.direction = this.direction === 'A' ? 'D' : 'A';
   }
 }
