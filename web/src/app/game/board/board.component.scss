@@ -31,15 +31,18 @@
     &.selected-clue {
       background: repeating-linear-gradient(45deg, #ddebf0, #ddebf0 5px, #FFF 5px, #FFF 10px);
       color: #666;
-      .tile-number {
-        color: inherit;
-        font-weight: bold;
-      }
     }
 
     &.selected-tile {
       background: #ddebf0;
       box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    &.selected-clue-first-letter {
+      .tile-number {
+        color: inherit;
+        font-weight: bold;
+      }
     }
   }
 

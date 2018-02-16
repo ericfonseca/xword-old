@@ -7,6 +7,7 @@
          class="tile"
          [class.tile-invalid]="tile.value === -1"
          [class.selected-clue]="tile.getClues().indexOf(selectedClue) > -1"
+         [class.selected-clue-first-letter]="selectedClue && selectedClue.position.isEqualTo(tile.position)"
          [class.selected-tile]="tile === selectedTile"
          (click)="onTileSelected(tile)"
     >
