@@ -7,11 +7,12 @@
          class="tile"
          [class.tile-invalid]="tile.value === -1"
          [class.selected-clue]="tile.getClues().indexOf(selectedClue) > -1"
-         [class.selected-clue-first-letter]="selectedClue && selectedClue.position.isEqualTo(tile.position)"
          [class.selected-tile]="tile === selectedTile"
          (click)="onTileSelected(tile)"
     >
-      <span class="tile-number">
+      <span class="tile-number"
+      [class.selected-first-letter]="selectedClue && selectedClue.position.isEqualTo(tile.position)"
+      >
         {{tile.displayNumber}}
       </span>
     </div>

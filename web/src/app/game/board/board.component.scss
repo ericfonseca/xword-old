@@ -19,6 +19,11 @@
       position: absolute;
         top: 5px;
         left: 5px;
+      &.selected-first-letter {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        color: inherit;
+        font-weight: bold;
+      }
     }
 
     &:last-child {
@@ -31,18 +36,18 @@
     &.selected-clue {
       background: repeating-linear-gradient(45deg, #ddebf0, #ddebf0 5px, #FFF 5px, #FFF 10px);
       color: #666;
+
+      .tile-number:not(.selected-first-letter) {
+        opacity: 0.5;
+      }
+      &.selected-tile .tile-number:not(.selected-first-letter) {
+        opacity: 0.2;
+      }
     }
 
     &.selected-tile {
       background: #ddebf0;
       box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
-    }
-
-    &.selected-clue-first-letter {
-      .tile-number {
-        color: inherit;
-        font-weight: bold;
-      }
     }
   }
 
