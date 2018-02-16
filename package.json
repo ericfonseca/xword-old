@@ -1,0 +1,30 @@
+{
+  "name": "xword",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "\"\"",
+  "dependencies": {},
+  "devDependencies": {
+    "husky": "^0.15.0-rc.8"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 2",
+    "lint:fix": "cd web && npm run lint:fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:fix"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericfonseca/xword.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ericfonseca/xword/issues"
+  },
+  "homepage": "https://github.com/ericfonseca/xword#readme"
+}

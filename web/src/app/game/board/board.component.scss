@@ -12,18 +12,11 @@
     height: 60px;
     width: 60px;
     padding: 30px 0;
-    position: relative;
 
-    .tile-number {
-      color: #999;
-      position: absolute;
-        top: 5px;
-        left: 5px;
-      &.selected-first-letter {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.3);
-        color: inherit;
-        font-weight: bold;
-      }
+    &.selected-first-letter ::ng-deep .tile-number {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+      color: inherit;
+      font-weight: bold;
     }
 
     &:last-child {
@@ -37,11 +30,13 @@
       background: repeating-linear-gradient(45deg, #ddebf0, #ddebf0 5px, #FFF 5px, #FFF 10px);
       color: #666;
 
-      .tile-number:not(.selected-first-letter) {
-        opacity: 0.5;
-      }
-      &.selected-tile .tile-number:not(.selected-first-letter) {
-        opacity: 0.2;
+      &:not(.selected-first-letter) {
+        ::ng-deep .tile-number {
+          opacity: 0.5;
+        }
+        &.selected-tile ::ng-deep .tile-number {
+          opacity: 0.2;
+        }
       }
     }
 

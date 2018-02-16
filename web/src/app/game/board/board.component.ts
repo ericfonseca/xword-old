@@ -4,7 +4,7 @@ import { Clue, Direction, Game, Tile } from '@app/models';
 @Component({
   selector: 'xw-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.scss']
+  styleUrls: ['./board.component.scss'],
 })
 export class BoardComponent implements OnInit {
   @Input() public game: Game;
@@ -30,7 +30,7 @@ export class BoardComponent implements OnInit {
     this.selectedTile = tile;
     try {
       this.selectedClue = tile.getClues().filter((clue) => clue.direction === this.direction)[0];
-    } catch(_) {
+    } catch (_) {
       this.selectedClue = tile.getClues()[0];
     }
   }

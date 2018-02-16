@@ -7,7 +7,7 @@ interface TileClue {
 }
 
 interface TileParams {
-  clues?: Clue[],
+  clues?: Clue[];
   value?: -1 | string;
   position: Position;
 }

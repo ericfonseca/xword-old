@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { BoardComponent } from './game/board/board.component';
 
 import { CoreModule } from '@app/core/core.module';
+import { TileComponent } from './game/tile/tile.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
+    TileComponent,
   ],
   imports: [
     AppRoutingModule,

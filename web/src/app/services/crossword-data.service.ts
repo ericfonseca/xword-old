@@ -22,7 +22,7 @@ interface CluesResponse {
     'y': number,
     'length': number,
     'hint': string,
-  }>,
+  }>;
 }
 
 @Injectable()
@@ -32,7 +32,7 @@ export class CrosswordDataService {
 
   public getPuzzles(): Observable<string[]> {
     return this.http.get(`${AppConfig.BASE_URL}/crosswords`)
-      .map((crosswordRes: CrosswordResponse) => this.extractCrosswordIds(crosswordRes))
+      .map((crosswordRes: CrosswordResponse) => this.extractCrosswordIds(crosswordRes));
   }
 
   public createNewGame(crossword: Crossword, opponent?: Player): Observable<Game> {
@@ -54,7 +54,7 @@ export class CrosswordDataService {
             return new Game({
               id: gameId,
               crossword: this.extractCrossword(clueRes),
-            })
+            });
           });
       });
   }

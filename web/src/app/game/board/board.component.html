@@ -3,18 +3,15 @@
   <div
     *ngFor="let row of game.board"
     class="board-row">
-    <div *ngFor="let tile of row"
-         class="tile"
-         [class.tile-invalid]="tile.value === -1"
-         [class.selected-clue]="tile.getClues().indexOf(selectedClue) > -1"
-         [class.selected-tile]="tile === selectedTile"
-         (click)="onTileSelected(tile)"
-    >
-      <span class="tile-number"
+    <xw-tile *ngFor="let tile of row"
+      [tile]="tile"
+      class="tile"
+      [class.tile-invalid]="tile.value === -1"
+      [class.selected-clue]="tile.getClues().indexOf(selectedClue) > -1"
+      [class.selected-tile]="tile === selectedTile"
       [class.selected-first-letter]="selectedClue && selectedClue.position.isEqualTo(tile.position)"
-      >
-        {{tile.displayNumber}}
-      </span>
-    </div>
+      (click)="onTileSelected(tile)"
+    >
+    </xw-tile>
   </div>
 </div>

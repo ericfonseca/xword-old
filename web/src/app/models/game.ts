@@ -24,7 +24,7 @@ export class Game {
     this.board = [];
     for (let i = 0; i < BOARD_SIZE; i++) {
       const row = [];
-      for(let j = 0; j < BOARD_SIZE; j++) {
+      for (let j = 0; j < BOARD_SIZE; j++) {
         row.push(new Tile({
           position: new Position(j, i),
         }));

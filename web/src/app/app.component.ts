@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
 
   public getCrosswords() {
     this.crosswordDataService.getPuzzles().subscribe((crosswordIds: string[]) => {
-      console.log(crosswordIds)
+      console.log(crosswordIds);
     });
   }
 
