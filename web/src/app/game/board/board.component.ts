@@ -28,14 +28,20 @@ export class BoardComponent implements OnInit {
     }
 
     this.selectedTile = tile;
-    try {
-      this.selectedClue = tile.getClues().filter((clue) => clue.direction === this.direction)[0];
-    } catch (_) {
-      this.selectedClue = tile.getClues()[0];
-    }
+    this.selectedClue = tile.getClue(this.direction);
+  }
+
+  public onTileUpdated(tile) {
+    console.log('updated', tile);
+    this.selectedTile = this.nextTile();
   }
 
   public changeDirection() {
     this.direction = this.direction === 'A' ? 'D' : 'A';
+  }
+
+  private nextTile() {
+    const next = this.game.nextTile(this.selectedTile, this.direction);
+    return next || this.selectedTile;
   }
 }

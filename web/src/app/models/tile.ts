@@ -1,4 +1,4 @@
-import { Clue } from './clue';
+import { Clue, Direction } from './clue';
 import { Position } from './position';
 
 interface TileClue {
@@ -19,6 +19,10 @@ export class Tile {
 
   constructor(args: TileParams) {
     this.setAttributes(args);
+  }
+
+  get displayValue(): string {
+    return this.value === -1 ? '' : this.value;
   }
 
   public setAttributes(args: TileParams) {
@@ -49,6 +53,14 @@ export class Tile {
     clues.forEach((clue) => {
       this.associatedClues.push(this.clueToAssociatedClue(clue));
     });
+  }
+
+  public getClue(direction: Direction) {
+    try {
+      return this.getClues().filter((clue) => clue.direction === direction)[0];
+    } catch (_) {
+      return this.getClues()[0];
+    }
   }
 
   private clueToAssociatedClue(clue: Clue): TileClue {

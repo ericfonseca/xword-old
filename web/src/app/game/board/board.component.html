@@ -5,12 +5,15 @@
     class="board-row">
     <xw-tile *ngFor="let tile of row"
       [tile]="tile"
+      [selected]="tile === selectedTile"
+
       class="tile"
       [class.tile-invalid]="tile.value === -1"
       [class.selected-clue]="tile.getClues().indexOf(selectedClue) > -1"
       [class.selected-tile]="tile === selectedTile"
       [class.selected-first-letter]="selectedClue && selectedClue.position.isEqualTo(tile.position)"
       (click)="onTileSelected(tile)"
+      (update)="onTileUpdated(tile)"
     >
     </xw-tile>
   </div>

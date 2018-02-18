@@ -1,6 +1,7 @@
 import { Crossword } from './crossword';
 import { Tile } from './tile';
 import { Position } from './position';
+import { Clue, Direction } from './clue';
 
 const BOARD_SIZE = 15;
 
@@ -33,6 +34,17 @@ export class Game {
     }
 
     this.populateBoard();
+  }
+
+  public nextTile(tile: Tile, direction: Direction) {
+    const clue = tile.getClue(direction);
+    const {x, y} = clue.position.getOffset(tile.position);
+    if (direction === 'A' && x < clue.tileLength - 1) {
+      return this.board[tile.position.x + 1][tile.position.y];
+    } else if (direction === 'D' && y < clue.tileLength - 1) {
+      return this.board[tile.position.x][tile.position.y + 1];
+    }
+    return null;
   }
 
   private populateBoard() {
