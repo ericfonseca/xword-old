@@ -52,7 +52,6 @@ func newGameHandler(w http.ResponseWriter, r *http.Request) {
 	game := Game{
 		GameID:  gameID,
 		Clues:   make(map[string]Clue),
-		Answers: make(map[string]string),
 		Grid:    &Board{},
 		Players: make(map[string]struct{}),
 	}
@@ -250,17 +249,17 @@ func submitAnswerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	uppercaseAnswer := strings.ToUpper(answerRequest.Answer)
 
-	serverAnswer, ok := game.Answers[clue]
+	c, ok := game.Clues[clue]
 	if !ok {
 		w.WriteHeader(404)
 		w.Write([]byte(fmt.Sprintf("there is no clue: %s", clue)))
 		return
 	}
 
-	if serverAnswer == uppercaseAnswer {
+	if c.Answer == uppercaseAnswer {
 		w.Write([]byte("ok"))
 		solvedClue := game.Clues[clue]
-		game.Grid.fillInAns(solvedClue.X, solvedClue.Y, solvedClue.Length, solvedClue.Direction, serverAnswer)
+		game.Grid.fillInAns(solvedClue.X, solvedClue.Y, solvedClue.Length, solvedClue.Direction, c.Answer)
 	} else {
 		w.Write([]byte("not ok"))
 	}

@@ -15,14 +15,12 @@ const preCluesStr2 = " Fred Piscop"
 type Game struct {
 	GameID  string
 	Clues   map[string]Clue
-	Answers map[string]string
 	Grid    *Board
 	Players map[string]struct{}
 }
 
 func (g *Game) init() {
 	g.Clues = make(map[string]Clue)
-	g.Answers = make(map[string]string)
 }
 
 func isAcross(r, c, width int, grid [][]byte) (bool, int) {
@@ -163,10 +161,10 @@ func (g *Game) readCrossword(crosswordID string) error {
 					Y:          r,
 					Length:     acrossLen,
 					Hint:       clues[clueOffset],
+					Answer:     string(ans),
 				}
 				key := fmt.Sprintf("%dA", clueNum)
 				g.Clues[key] = clue
-				g.Answers[key] = string(ans)
 				clueOffset++
 			}
 
@@ -183,10 +181,10 @@ func (g *Game) readCrossword(crosswordID string) error {
 					Y:          r,
 					Length:     downLen,
 					Hint:       clues[clueOffset],
+					Answer:     string(ans),
 				}
 				key := fmt.Sprintf("%dD", clueNum)
 				g.Clues[key] = clue
-				g.Answers[key] = string(ans)
 				clueOffset++
 			}
 
