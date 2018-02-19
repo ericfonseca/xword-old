@@ -14,6 +14,7 @@ export class Game {
   public id: string;
   public crossword: Crossword;
   public board: Tile[][];
+  public selectedClue: Clue;
 
   constructor(args: GameParams) {
     Object.assign(this, args);
