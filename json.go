@@ -22,6 +22,7 @@ type Clue struct {
 	Y          int    `json:"y"`
 	Length     int    `json:"length"`
 	Hint       string `json:"hint"`
+	Answer     string `json:"answer"`
 }
 type Clues struct {
 	Clues []Clue `json:"clues"`
