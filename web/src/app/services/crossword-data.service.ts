@@ -22,6 +22,7 @@ interface CluesResponse {
     'y': number,
     'length': number,
     'hint': string,
+    'answer': string,
   }>;
 }
 
@@ -35,9 +36,9 @@ export class CrosswordDataService {
       .map((crosswordRes: CrosswordResponse) => this.extractCrosswordIds(crosswordRes));
   }
 
-  public createNewGame(crossword: Crossword, opponent?: Player): Observable<Game> {
+  public createNewGame(crosswordId: String, opponent?: Player): Observable<Game> {
     const data = {
-      'crossword_id': crossword.id,
+      'crossword_id': crosswordId,
       'player_ids': ['eric', 'victoria'],
     };
     return this.http.post(AppConfig.GAME_URL, JSON.stringify(data))

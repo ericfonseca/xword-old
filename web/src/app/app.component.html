@@ -1,5 +1,12 @@
-<button (click)="createNewGame()">Create Game</button>
-
+<div>
+  <ul>
+    <li *ngFor="let id of crosswordIds"
+        (click)="createNewGame(id)"
+    >
+      {{id}}
+    </li>
+  </ul>
+</div>
 <div *ngIf="game">
   <h1>Game details</h1>
   <strong>id:</strong> {{game.id}}
