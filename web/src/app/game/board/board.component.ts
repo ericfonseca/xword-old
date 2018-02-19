@@ -32,7 +32,6 @@ export class BoardComponent implements OnInit {
   }
 
   public onTileUpdated(tile) {
-    console.log('updated', tile);
     this.selectedTile = this.nextTile();
   }
 
