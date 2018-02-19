@@ -8,7 +8,6 @@ import { Clue, Direction, Game, Tile } from '@app/models';
 })
 export class BoardComponent implements OnInit {
   @Input() public game: Game;
-  public selectedClue: Clue;
   public selectedTile: Tile;
   public direction: Direction = 'A';
 
@@ -28,7 +27,7 @@ export class BoardComponent implements OnInit {
     }
 
     this.selectedTile = tile;
-    this.selectedClue = tile.getClue(this.direction);
+    this.game.selectedClue = tile.getClue(this.direction);
   }
 
   public onTileUpdated(tile) {
