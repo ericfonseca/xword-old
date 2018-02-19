@@ -18,12 +18,12 @@ export class AppComponent implements OnInit {
 
   public ngOnInit() {
     this.getCrosswords();
-    //this.createNewGame();
   }
 
   public getCrosswords() {
     this.crosswordDataService.getPuzzles().subscribe((crosswordIds: string[]) => {
       this.crosswordIds = crosswordIds;
+      this.createNewGame(crosswordIds[0]);
     });
   }
 
