@@ -21,6 +21,21 @@ export class Game {
     this.initBoard();
   }
 
+  public nextTile(tile: Tile, direction: Direction) {
+    const clue = tile.getClue(direction);
+    const {x, y} = clue.position.getOffset(tile.position);
+    if (direction === 'A' && x < clue.tileLength - 1) {
+      return this.getTile({ x: tile.position.x + 1, y: tile.position.y });
+    } else if (direction === 'D' && y < clue.tileLength - 1) {
+      return this.getTile({ x: tile.position.x, y: tile.position.y + 1 });
+    }
+    return null;
+  }
+
+  public getTile(position: Position | {x: number, y: number}) {
+    return this.board[position.y][position.x];
+  }
+
   private initBoard() {
     this.board = [];
     for (let i = 0; i < BOARD_SIZE; i++) {
@@ -34,17 +49,6 @@ export class Game {
     }
 
     this.populateBoard();
-  }
-
-  public nextTile(tile: Tile, direction: Direction) {
-    const clue = tile.getClue(direction);
-    const {x, y} = clue.position.getOffset(tile.position);
-    if (direction === 'A' && x < clue.tileLength - 1) {
-      return this.board[tile.position.x + 1][tile.position.y];
-    } else if (direction === 'D' && y < clue.tileLength - 1) {
-      return this.board[tile.position.x][tile.position.y + 1];
-    }
-    return null;
   }
 
   private populateBoard() {
