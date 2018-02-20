@@ -32,9 +32,9 @@ export class BoardComponent implements OnInit {
 
   public onTileUpdated(tile) {
     if (this.selectedTile.value === '') {
-      this.selectedTile = this.previousTile();
+      this.selectedTile = this.previousTile(this.direction);
     } else {
-      this.selectedTile = this.nextTile();
+      this.selectedTile = this.nextTile(this.direction);
     }
   }
 
@@ -42,13 +42,32 @@ export class BoardComponent implements OnInit {
     this.direction = this.direction === 'A' ? 'D' : 'A';
   }
 
-  private previousTile() {
-    const prev = this.game.previousTile(this.selectedTile, this.direction);
+  private previousTile(direction: Direction) {
+    const prev = this.game.previousTile(this.selectedTile, direction);
     return prev || this.selectedTile;
   }
 
-  private nextTile() {
-    const next = this.game.nextTile(this.selectedTile, this.direction);
+  private nextTile(direction: Direction) {
+    const next = this.game.nextTile(this.selectedTile, direction);
     return next || this.selectedTile;
+  }
+
+  public onArrowPress(tile: Tile, evt: KeyboardEvent) {
+    console.log(evt);
+    switch (evt.key) {
+      case 'ArrowDown':
+        this.selectedTile = this.nextTile('D');
+        break;
+      case 'ArrowUp':
+        this.selectedTile = this.previousTile('D');
+        break;
+      case 'ArrowLeft':
+        this.selectedTile = this.previousTile('A');
+        break;
+      case 'ArrowRight':
+        this.selectedTile = this.nextTile('A');
+        break;
+    }
+    this.game.selectedClue = this.selectedTile.getClue(this.direction);
   }
 }
