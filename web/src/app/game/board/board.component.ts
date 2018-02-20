@@ -32,7 +32,7 @@ export class BoardComponent implements OnInit {
 
   public onTileUpdated(tile) {
     if (this.selectedTile.value === '') {
-      // TODO: move to previous tile
+      this.selectedTile = this.previousTile();
     } else {
       this.selectedTile = this.nextTile();
     }
@@ -40,6 +40,11 @@ export class BoardComponent implements OnInit {
 
   public changeDirection() {
     this.direction = this.direction === 'A' ? 'D' : 'A';
+  }
+
+  private previousTile() {
+    const prev = this.game.previousTile(this.selectedTile, this.direction);
+    return prev || this.selectedTile;
   }
 
   private nextTile() {
