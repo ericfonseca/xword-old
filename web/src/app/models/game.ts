@@ -48,11 +48,6 @@ export class Game {
         }
       }
     }
-    if (direction === 'A' && x > 0) {
-      return this.getTile({ x: tile.position.x - 1, y: tile.position.y });
-    } else if (direction === 'D' && y > 0) {
-      return this.getTile({ x: tile.position.x, y: tile.position.y - 1 });
-    }
     return null;
   }
 
