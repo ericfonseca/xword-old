@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CrosswordDataService } from '@services/crossword-data.service';
 import { Game, Crossword } from '@app/models';
 
@@ -11,9 +12,9 @@ import 'rxjs/add/operator/first';
 })
 export class AppComponent implements OnInit {
   public crosswordIds: String[];
-  public game: Game;
   constructor(
-    public crosswordDataService: CrosswordDataService,
+    private crosswordDataService: CrosswordDataService,
+    private router: Router,
   ) { }
 
   public ngOnInit() {
@@ -30,7 +31,7 @@ export class AppComponent implements OnInit {
   public createNewGame(crosswordId) {
     this.crosswordDataService.createNewGame(crosswordId).first().subscribe({
       next: (game: Game) => {
-        this.game = game;
+        this.router.navigate(['game', game.id]);
       },
       error: (res) => {
         console.error('error creating game', res);
