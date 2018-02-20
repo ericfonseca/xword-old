@@ -7,27 +7,4 @@
     </li>
   </ul>
 </div>
-<div *ngIf="game">
-  <h1>Game details</h1>
-  <strong>id:</strong> {{game.id}}
-  <div class="game-container">
-    <xw-board [game]="game"></xw-board>
-    <div class="clues">
-      <h2>Across</h2>
-      <ul>
-        <li *ngFor="let clue of game.crossword.acrossClues"
-            [class.selected-clue]="game.selectedClue === clue">
-          <strong>{{clue.number}}</strong><span>{{clue.hint}}</span>
-        </li>
-      </ul>
-
-      <h2>Down</h2>
-      <ul>
-        <li *ngFor="let clue of game.crossword.downClues"
-            [class.selected-clue]="game.selectedClue === clue">
-          <strong>{{clue.number}}</strong><span>{{clue.hint}}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
+<xw-game *ngIf="game" [game]="game"></xw-game>
