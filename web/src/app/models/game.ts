@@ -22,6 +22,17 @@ export class Game {
     this.initBoard();
   }
 
+  public previousTile(tile: Tile, direction: Direction) {
+    const clue = tile.getClue(direction);
+    const {x, y} = clue.position.getOffset(tile.position);
+    if (direction === 'A' && x > 0) {
+      return this.getTile({ x: tile.position.x -1, y: tile.position.y })
+    } else if (direction === 'D' && y > 0) {
+      return this.getTile({ x: tile.position.x, y: tile.position.y -1 });
+    }
+    return null;
+  }
+
   public nextTile(tile: Tile, direction: Direction) {
     const clue = tile.getClue(direction);
     const {x, y} = clue.position.getOffset(tile.position);
