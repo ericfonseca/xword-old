@@ -31,7 +31,11 @@ export class BoardComponent implements OnInit {
   }
 
   public onTileUpdated(tile) {
-    this.selectedTile = this.nextTile();
+    if (this.selectedTile.value === '') {
+      // TODO: move to previous tile
+    } else {
+      this.selectedTile = this.nextTile();
+    }
   }
 
   public changeDirection() {
