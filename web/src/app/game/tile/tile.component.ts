@@ -33,9 +33,12 @@ export class TileComponent implements OnInit, OnChanges {
   }
 
   public onInputChange(keyEvt) {
-    const { charCode, key } = keyEvt;
-    if (charCode >= LETTER_RANGE_START && charCode <= LETTER_RANGE_END) {
+    const { keyCode, key } = keyEvt;
+    if (keyCode >= LETTER_RANGE_START && keyCode <= LETTER_RANGE_END) {
       this.tile.value = key.toUpperCase();
+      this.update.emit(this.tile.displayValue);
+    } else if (key === 'Backspace') {
+      this.tile.value = '';
       this.update.emit(this.tile.displayValue);
     }
   }
