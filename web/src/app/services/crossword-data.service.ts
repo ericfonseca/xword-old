@@ -29,6 +29,8 @@ interface CluesResponse {
 @Injectable()
 export class CrosswordDataService {
 
+  private games: { [id: string]: Game } = {};
+
   constructor(public http: HttpClient) { }
 
   public getPuzzles(): Observable<string[]> {
@@ -44,10 +46,17 @@ export class CrosswordDataService {
     return this.http.post(AppConfig.GAME_URL, JSON.stringify(data))
       .mergeMap((res: GameResponse) => {
         return this.getGame(res.game_id);
+      })
+      .do((game) => {
+        this.games[game.id] = game;
       });
   }
 
   public getGame(gameId: string): Observable<Game> {
+    if (this.games[gameId]) {
+      return Observable.of(this.games[gameId]);
+    }
+
     return this.http.get(`${AppConfig.GAME_URL}/${gameId}`)
       .mergeMap((res: GameResponse) => {
         return this.http.get(`${AppConfig.GAME_URL}/${gameId}/clues`)
